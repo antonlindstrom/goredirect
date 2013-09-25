@@ -17,10 +17,16 @@ var RedirectMap map[string]string
 
 // Server, make sure we fail as fast as possible
 func main() {
+	var port = "8080"
+
+	if os.Getenv("PORT") != "" {
+		port = os.Getenv("PORT")
+	}
+
 	loadConfiguration()
 
 	s := &http.Server{
-		Addr:           ":8080",
+		Addr:           ":" + port,
 		ReadTimeout:    1 * time.Second,
 		WriteTimeout:   1 * time.Second,
 		MaxHeaderBytes: 1 << 20,
@@ -29,7 +35,7 @@ func main() {
 	http.HandleFunc("/", HostRedirect)
 	http.HandleFunc("/reload", ReloadConfig)
 
-	log.Printf("Serving requests on :8080")
+	log.Printf("Serving requests on port %s\n", port)
 	log.Fatal(s.ListenAndServe())
 }
 
