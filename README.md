@@ -1,4 +1,4 @@
-# goredirect - HTTP Host redirection.
+j goredirect - HTTP Host redirection.
 
 This aims to redirect hosts specified in `config.json` to another URL.
 
@@ -16,6 +16,10 @@ These will redirect from example.de to http://example.com and example.fi to http
 The config will load into memory and can be reloaded by running a GET query to `/reload`.
 
 In a Vagrant box it can do about 3500qps and allocates around 5MB heap.
+
+You can set the port by running it with env PORT, example:
+
+    PORT=8080 ./bin/goredirect
 
 ## Build
 
