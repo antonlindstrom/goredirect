@@ -23,5 +23,5 @@ You can set the port by running it with env PORT, example:
 
 ## Build
 
-    mkdir bin
-    go build -o bin/goredirect goredirect.go
+    make get-deps
+    make
