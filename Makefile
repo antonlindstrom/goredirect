@@ -8,5 +8,8 @@ get-deps:
 test:
 	@go test -v ./...
 
+format:
+	@go fmt ./...
+
 clean:
 	@rm -rf bin/
