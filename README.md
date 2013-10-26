@@ -1,4 +1,4 @@
-j goredirect - HTTP Host redirection.
+# goredirect - HTTP Host redirection.
 
 This aims to redirect hosts specified in `config.json` to another URL.
 
