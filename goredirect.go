@@ -23,7 +23,7 @@ func main() {
 		port = os.Getenv("PORT")
 	}
 
-	loadConfiguration()
+	loadConfig()
 
 	s := &http.Server{
 		Addr:           ":" + port,
@@ -56,13 +56,13 @@ func HostRedirect(w http.ResponseWriter, req *http.Request) {
 
 // Handler to reload configuration
 func ReloadConfig(w http.ResponseWriter, req *http.Request) {
-	loadConfiguration()
+	loadConfig()
 	log.Printf("code: 200, reload")
 	fmt.Fprintf(w, "OK, reloaded.")
 }
 
 // Load configuration
-func loadConfiguration() {
+func loadConfig() {
 	bytes, err := ioutil.ReadFile("./config.json")
 
 	if err != nil {
