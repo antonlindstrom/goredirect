@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -13,6 +14,7 @@ import (
 
 const RedirectType = 301
 
+var Verbose bool
 var RedirectMap map[string]string
 
 // Server, make sure we fail as fast as possible
@@ -22,6 +24,9 @@ func main() {
 	if os.Getenv("PORT") != "" {
 		port = os.Getenv("PORT")
 	}
+
+	flag.BoolVar(&Verbose, "verbose", true, "Set verbose output")
+	flag.Parse()
 
 	LoadConfig()
 
@@ -35,7 +40,10 @@ func main() {
 	http.HandleFunc("/", HostRedirect)
 	http.HandleFunc("/reload", ReloadConfig)
 
-	log.Printf("Serving requests on port %s\n", port)
+	if Verbose {
+		log.Printf("Serving requests on port %s\n", port)
+	}
+
 	log.Fatal(s.ListenAndServe())
 }
 
@@ -45,19 +53,25 @@ func HostRedirect(w http.ResponseWriter, req *http.Request) {
 	redirectUrl := RedirectMap[requestUrl]
 
 	if redirectUrl == "" {
+		if Verbose {
+			log.Printf("code: 503, request: %s, redirect: empty!, path: %s", requestUrl, req.URL.Path)
+		}
 		http.Error(w, "503: Could not map request!", 503)
-		log.Printf("code: 503, request: %s, redirect: empty!, path: %s", requestUrl, req.URL.Path)
 		return
 	}
 
-	log.Printf("code: %d, request: %s, redirect: %s, path: %s", RedirectType, requestUrl, redirectUrl, req.URL.Path)
+	if Verbose {
+		log.Printf("code: %d, request: %s, redirect: %s, path: %s", RedirectType, requestUrl, redirectUrl, req.URL.Path)
+	}
 	http.Redirect(w, req, redirectUrl, RedirectType)
 }
 
 // Handler to reload configuration
 func ReloadConfig(w http.ResponseWriter, req *http.Request) {
 	LoadConfig()
-	log.Printf("code: 200, reload")
+	if Verbose {
+		log.Printf("code: 200, reload")
+	}
 	fmt.Fprintf(w, "OK, reloaded.")
 }
 
@@ -66,12 +80,12 @@ func LoadConfig() {
 	bytes, err := ioutil.ReadFile("./config.json")
 
 	if err != nil {
-		log.Fatal("Error: %s\n", err)
+		log.Fatal("Error ", err)
 	}
 
 	err = json.Unmarshal(bytes, &RedirectMap)
 
 	if err != nil {
-		log.Fatal("Error: %s\n", err)
+		log.Fatal("Error ", err)
 	}
 }
