@@ -66,14 +66,12 @@ func loadConfig() {
 	bytes, err := ioutil.ReadFile("./config.json")
 
 	if err != nil {
-		log.Printf("%s\n", err)
-		os.Exit(1)
+		log.Fatal("Error: %s\n", err)
 	}
 
-	parseErr := json.Unmarshal(bytes, &RedirectMap)
+	err = json.Unmarshal(bytes, &RedirectMap)
 
-	if parseErr != nil {
-		log.Fatal("%s\n", err)
-		os.Exit(1)
+	if err != nil {
+		log.Fatal("Error: %s\n", err)
 	}
 }
