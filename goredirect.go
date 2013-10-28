@@ -39,6 +39,7 @@ func main() {
 
 	http.HandleFunc("/", HostRedirect)
 	http.HandleFunc("/reload", ReloadConfig)
+	http.HandleFunc("/status", StatusCheck)
 
 	if Verbose {
 		log.Printf("Serving requests on port %s\n", port)
@@ -73,6 +74,11 @@ func ReloadConfig(w http.ResponseWriter, req *http.Request) {
 		log.Printf("code: 200, reload")
 	}
 	fmt.Fprintf(w, "OK, reloaded.")
+}
+
+// Status handler
+func StatusCheck(w http.ResponseWriter, req *http.Request) {
+	fmt.Fprintf(w, "OK")
 }
 
 // Load configuration
