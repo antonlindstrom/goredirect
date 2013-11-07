@@ -21,6 +21,10 @@ You can set the port by running it with env PORT, example:
 
     PORT=8080 ./bin/goredirect
 
+If you for some reason would like to disable the output log, set the `verbose` flag to false:
+
+    ./bin/goredirect -verbose=false
+
 ## Build
 
     make get-deps
