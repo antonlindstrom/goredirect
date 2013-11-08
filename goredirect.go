@@ -41,10 +41,7 @@ func main() {
 	http.HandleFunc("/reload", ReloadConfig)
 	http.HandleFunc("/status", StatusCheck)
 
-	if Verbose {
-		log.Printf("Serving requests on port %s\n", port)
-	}
-
+	logger("Serving requests on port %s\n", port)
 	log.Fatal(s.ListenAndServe())
 }
 
@@ -54,25 +51,19 @@ func HostRedirect(w http.ResponseWriter, req *http.Request) {
 	redirectUrl := RedirectMap[requestUrl]
 
 	if redirectUrl == "" {
-		if Verbose {
-			log.Printf("code: 503, request: %s, redirect: empty!, path: %s", requestUrl, req.URL.Path)
-		}
+		logger("code: 503, request: %s, redirect: empty!, path: %s", requestUrl, req.URL.Path)
 		http.Error(w, "503: Could not map request!", 503)
 		return
 	}
 
-	if Verbose {
-		log.Printf("code: %d, request: %s, redirect: %s, path: %s", RedirectType, requestUrl, redirectUrl, req.URL.Path)
-	}
+	logger("code: %d, request: %s, redirect: %s, path: %s", RedirectType, requestUrl, redirectUrl, req.URL.Path)
 	http.Redirect(w, req, redirectUrl, RedirectType)
 }
 
 // Handler to reload configuration
 func ReloadConfig(w http.ResponseWriter, req *http.Request) {
 	LoadConfig()
-	if Verbose {
-		log.Printf("code: 200, reload")
-	}
+	logger("code: 200, reload")
 	fmt.Fprintf(w, "OK, reloaded.")
 }
 
@@ -93,5 +84,12 @@ func LoadConfig() {
 
 	if err != nil {
 		log.Fatal("Error ", err)
+	}
+}
+
+// Log if we're running verbose
+func logger(message string, args ...interface{}) {
+	if Verbose {
+		log.Printf(message, args...)
 	}
 }
