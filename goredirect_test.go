@@ -12,7 +12,7 @@ func TestReloadConfig(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(ReloadConfig))
 	defer server.Close()
 
-	resp, err := http.DefaultClient.Get(server.URL + "/reload")
+	resp, err := http.DefaultClient.Get(server.URL + "/r/config/reload")
 
 	if err != nil {
 		t.Fatal(err)
@@ -20,8 +20,8 @@ func TestReloadConfig(t *testing.T) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 
-	if string(body) != "OK, reloaded." {
-		t.Fatal("Didn't get OK from /reload")
+	if string(body) != "OK" {
+		t.Fatal("Didn't get OK from /r/config/reload")
 	}
 }
 

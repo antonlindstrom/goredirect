@@ -13,7 +13,7 @@ Example `config.json`:
 
 These will redirect from example.de to http://example.com and example.fi to http://example.com
 
-The config will load into memory and can be reloaded by running a GET query to `/reload`.
+The config will load into memory and can be reloaded by running a GET query to `/r/config/reload`.
 
 In a Vagrant box it can do about 3500qps and allocates around 5MB heap.
 
