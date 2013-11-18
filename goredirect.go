@@ -37,9 +37,10 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 	}
 
+	http.HandleFunc("/r/config/dump", DumpConfig)
+	http.HandleFunc("/r/config/reload", ReloadConfig)
+	http.HandleFunc("/r/status", StatusCheck)
 	http.HandleFunc("/", HostRedirect)
-	http.HandleFunc("/reload", ReloadConfig)
-	http.HandleFunc("/status", StatusCheck)
 
 	logger("Serving requests on port %s\n", port)
 	log.Fatal(s.ListenAndServe())
@@ -57,14 +58,21 @@ func HostRedirect(w http.ResponseWriter, req *http.Request) {
 	}
 
 	logger("code: %d, request: %s, redirect: %s, path: %s", RedirectType, requestUrl, redirectUrl, req.URL.Path)
-	http.Redirect(w, req, redirectUrl, RedirectType)
+	http.Redirect(w, req, redirectUrl+req.URL.Path, RedirectType)
+}
+
+// Dump RedirectMap
+func DumpConfig(w http.ResponseWriter, req *http.Request) {
+	json, _ := json.Marshal(RedirectMap)
+	logger("code: 200, dump")
+	fmt.Fprintf(w, string(json))
 }
 
 // Handler to reload configuration
 func ReloadConfig(w http.ResponseWriter, req *http.Request) {
-	LoadConfig()
+	msg := LoadConfig()
 	logger("code: 200, reload")
-	fmt.Fprintf(w, "OK, reloaded.")
+	fmt.Fprintf(w, msg)
 }
 
 // Status handler
@@ -73,18 +81,22 @@ func StatusCheck(w http.ResponseWriter, req *http.Request) {
 }
 
 // Load configuration
-func LoadConfig() {
+func LoadConfig() string {
 	bytes, err := ioutil.ReadFile("./config.json")
 
 	if err != nil {
-		log.Fatal("Error ", err)
+		log.Printf("Error %s\n", err)
+		return "Could not read config file"
 	}
 
 	err = json.Unmarshal(bytes, &RedirectMap)
 
 	if err != nil {
-		log.Fatal("Error ", err)
+		log.Printf("Error %s\n", err)
+		return "JSON parse error"
 	}
+
+	return "OK"
 }
 
 // Log if we're running verbose
