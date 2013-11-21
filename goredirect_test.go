@@ -25,6 +25,23 @@ func TestReloadConfig(t *testing.T) {
 	}
 }
 
+func TestStatus(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(StatusCheck))
+	defer server.Close()
+
+	resp, err := http.DefaultClient.Get(server.URL + "/status")
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+
+	if string(body) != "OK" {
+		t.Fatal("Didn't get OK from /status")
+	}
+}
+
 func TestHostRedirect(t *testing.T) {
 	LoadConfig()
 	responseCode := RunRedirect("localhost")
